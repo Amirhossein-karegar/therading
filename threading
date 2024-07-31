@@ -1,0 +1,32 @@
+import threading 
+from time import sleep
+
+STREAM = []
+
+
+def publisher():
+    while True:
+        if len(STREAM) != 0 :    #halghe bi nahayate montazer mohtavaye jabe mimone
+            data = STREAM[0]
+            del STREAM[0]
+            yield data          #kare genrator hast bar inke yadesh bemone ta koja rafte 
+        else:
+            yield None
+
+def subscriber():
+    pub_generator = publisher()
+    while True:                        #inja mige boro badi (dast bokon to jabe)
+        data = next(pub_generator)
+        if data is not None:          
+            print(f"\nStreamed data is {data}")
+
+pub = threading.Thread(target=publisher)
+sub = threading.Thread(target=subscriber)
+
+pub.start()
+sub.start()
+
+
+while True:
+    data = input("Enter data to put int into stream:")
+    STREAM.append(data)
